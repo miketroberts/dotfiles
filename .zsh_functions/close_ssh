@@ -1,0 +1,6 @@
+echo "Closing ssh control sessions"
+for session in ~/.ssh/.run/*
+do
+    echo "Exiting session '$session'"
+	ssh -o ControlPath=$session -O exit bogus
+done
