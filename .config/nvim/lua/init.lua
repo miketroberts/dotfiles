@@ -22,527 +22,529 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require('lazy').setup({
-  -- NOTE: First, some plugins that don't require any configuration
+require("lazy").setup("plugins")
 
-  -- Git related plugins
-  'tpope/vim-fugitive',
-  'tpope/vim-rhubarb',
-
-  -- Detect tabstop and shiftwidth automatically
-  'tpope/vim-sleuth',
-
-  -- NOTE: This is where your plugins related to LSP can be installed.
-  --  The configuration is done below. Search for lspconfig to find it below.
-  {
-    -- LSP Configuration & Plugins
-    'neovim/nvim-lspconfig',
-    dependencies = {
-      -- Automatically install LSPs to stdpath for neovim
-      'williamboman/mason.nvim',
-      'williamboman/mason-lspconfig.nvim',
-
-      -- Useful status updates for LSP
-      -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
-
-      -- Additional lua configuration, makes nvim stuff amazing!
-      'folke/neodev.nvim',
-    },
-  },
-
-  {
-    -- Autocompletion
-    'hrsh7th/nvim-cmp',
-    dependencies = {
-      -- Snippet Engine & its associated nvim-cmp source
-      'L3MON4D3/LuaSnip',
-      'saadparwaiz1/cmp_luasnip',
-
-      -- Adds LSP completion capabilities
-      'hrsh7th/cmp-nvim-lsp',
-
-      -- Adds a number of user-friendly snippets
-      'rafamadriz/friendly-snippets',
-    },
-  },
-
-  -- Useful plugin to show you pending keybinds.
-  {
-    'folke/which-key.nvim',
-    event = "VeryLazy",
-    opts = {},
-    keys = {
-      {
-        "<leader>?",
-        function()
-          require("which-key").show({ global = false })
-        end,
-        desc = "Buffer Local Keymaps (which-key)",
-      },
-    },
-  },
-  {
-    'echasnovski/mini.nvim', version = false
-  },
-  {
-    -- Adds git related signs to the gutter, as well as utilities for managing changes
-    'lewis6991/gitsigns.nvim',
-    opts = {
-      -- See `:help gitsigns.txt`
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
-      on_attach = function(bufnr)
-        vim.keymap.set('n', '<leader>hp', require('gitsigns').preview_hunk, { buffer = bufnr, desc = 'Preview git hunk' })
-
-        -- don't override the built-in and fugitive keymaps
-        local gs = package.loaded.gitsigns
-        vim.keymap.set({ 'n', 'v' }, ']c', function()
-          if vim.wo.diff then
-            return ']c'
-          end
-          vim.schedule(function()
-            gs.next_hunk()
-          end)
-          return '<Ignore>'
-        end, { expr = true, buffer = bufnr, desc = 'Jump to next hunk' })
-        vim.keymap.set({ 'n', 'v' }, '[c', function()
-          if vim.wo.diff then
-            return '[c'
-          end
-          vim.schedule(function()
-            gs.prev_hunk()
-          end)
-          return '<Ignore>'
-        end, { expr = true, buffer = bufnr, desc = 'Jump to previous hunk' })
-      end,
-    },
-  },
-
-  -- {
-  --   -- Theme inspired by Atom
-  --   'navarasu/onedark.nvim',
-  --   priority = 1000,
-  --   config = function()
-  --     require('onedark').setup {
-  --       style = 'deep'
-  --     }
-  --     vim.cmd.colorscheme 'onedark'
-  --   end,
-  -- },
-  {
-    -- Theme inspired by Atom
-    'sainnhe/gruvbox-material',
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme 'gruvbox-material'
-    end,
-  },
-  {
-    'EdenEast/nightfox.nvim',
-    priority = 1000
-  },
-  {
-    'catppuccin/nvim', name = 'catppuccin', priority = 1000
-  },
-  {
-    'Mofiqul/vscode.nvim', priority = 1000
-  },
-  -- {
-  --   "folke/tokyonight.nvim",
-  --   lazy = false,
-  --   priority = 1000,
-  --   opts = {},
-  --   config = function()
-  --     vim.cmd.colorscheme 'tokyonight-night'
-  --   end,
-  --
-  -- },
-  -- {
-  --   "catppuccin/nvim",
-  --   name = "catppuccin",
-  --   priority = 1000,
-  --   opts = {
-  --     flavour = "mocha", -- latte, frappe, macchiato, mocha
-  --     background = { -- :h background
-  --       light = "latte",
-  --       dark = "mocha",
-  --     },
-  --     transparent_background = false, -- disables setting the background color.
-  --     show_end_of_buffer = false, -- shows the '~' characters after the end of buffers
-  --     term_colors = false, -- sets terminal colors (e.g. `g:terminal_color_0`)
-  --     dim_inactive = {
-  --       enabled = false, -- dims the background color of inactive window
-  --       shade = "dark",
-  --       percentage = 0.15, -- percentage of the shade to apply to the inactive window
-  --     },
-  --     integrations = {
-  --       cmp = true,
-  --       gitsigns = true,
-  --       nvimtree = true,
-  --       treesitter = true,
-  --       notify = false,
-  --       mini = {
-  --         enabled = true,
-  --         indentscope_color = "",
-  --       },
-  --     },
-  --     color_overrides = {
-  --       mocha = { -- custom
-  --         rosewater = "#ffc6be",
-  --         flamingo = "#fb4934",
-  --         pink = "#ff75a0",
-  --         mauve = "#f2594b",
-  --         red = "#f2594b",
-  --         maroon = "#fe8019",
-  --         peach = "#FFAD7D",
-  --         yellow = "#e9b143",
-  --         green = "#b0b846",
-  --         teal = "#8bba7f",
-  --         sky = "#7daea3",
-  --         sapphire = "#689d6a",
-  --         blue = "#80aa9e",
-  --         lavender = "#e2cca9",
-  --         text = "#e2cca9",
-  --         subtext1 = "#e2cca9",
-  --         subtext0 = "#e2cca9",
-  --         overlay2 = "#8C7A58",
-  --         overlay1 = "#735F3F",
-  --         overlay0 = "#806234",
-  --         surface2 = "#665c54",
-  --         surface1 = "#3c3836",
-  --         surface0 = "#32302f",
-  --         base = "#282828",
-  --         mantle = "#1d2021",
-  --         crust = "#1b1b1b",
-  --
-  --       },
-  --     },
-  --   },
-  --   config = function()
-  --     vim.cmd.colorscheme 'catppuccin'
-  --   end,
-  --
-  -- },
-
-  -- {
-  --   "rebelot/kanagawa.nvim",
-  --   priority = 1000,
-  --   opts = {
-  --     undercurl = true,
-  --     commentStyle = {
-  --       italic = true
-  --     },
-  --     functionStyle = {},
-  --     keywordStyle = {
-  --       italic = true
-  --     },
-  --     statementStyle = {
-  --       italic = true
-  --     },
-  --     theme = "dragon"
-  --   },
-  --   config = function()
-  --     vim.cmd.colorscheme 'kanagawa-dragon'
-  --   end,
-  -- },
-
-  {
-    -- Set lualine as statusline
-    'nvim-lualine/lualine.nvim',
-    -- See `:help lualine.txt`
-    opts = {
-      options = {
-        icons_enabled = false,
-        theme = 'onedark',
-        component_separators = '|',
-        section_separators = '',
-      },
-    },
-  },
-
-  {
-    -- Add indentation guides even on blank lines
-    'lukas-reineke/indent-blankline.nvim',
-    -- Enable `lukas-reineke/indent-blankline.nvim`
-    -- See `:help ibl`
-    main = 'ibl',
-    opts = {},
-  },
-
-  -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
-
-  -- Fuzzy Finder (files, lsp, etc)
-  {
-    'nvim-telescope/telescope.nvim',
-    branch = '0.1.x',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      -- Fuzzy Finder Algorithm which requires local dependencies to be built.
-      -- Only load if `make` is available. Make sure you have the system
-      -- requirements installed.
-      {
-        'nvim-telescope/telescope-fzf-native.nvim',
-        -- NOTE: If you are having trouble with this installation,
-        --       refer to the README for telescope-fzf-native for more instructions.
-        build = 'make',
-        cond = function()
-          return vim.fn.executable 'make' == 1
-        end,
-      },
-    },
-  },
-
-  {
-    -- Highlight, edit, and navigate code
-    'nvim-treesitter/nvim-treesitter',
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter-textobjects',
-    },
-    build = ':TSUpdate',
-  },
-  {
-    'nvim-tree/nvim-tree.lua',
-    dependencies = {
-      'nvim-tree/nvim-web-devicons'
-    },
-    opts = {
-      sort_by = "case_sensitive",
-      view = {
-        width = 30,
-      },
-      renderer = {
-        group_empty = true,
-      },
-      filters = {
-        dotfiles = true,
-      },
-    }
-  },
-  {
-    'Vigemus/iron.nvim',
-    opts = {
-      config = {
-        scratch_repl = true,
-        repl_definition = {
-          javascript = {
-            command = {"ts-node"}
-          }
-        },
-      },
-      highlight = {
-          italic = true
-      },
-      ignore_blank_lines = true, -- ignore blank lines when sending visual select lines
-      keymaps = {
-        send_motion = "<leader>sc",
-        visual_send = "<leader>sc",
-        send_file = "<leader>sf",
-        send_line = "<leader>sl",
-        send_until_cursor = "<leader>su",
-        send_mark = "<leader>sm",
-        mark_motion = "<leader>mc",
-        mark_visual = "<leader>mc",
-        remove_mark = "<leader>md",
-        cr = "<leader>s<cr>",
-        exit = "<leader>sq",
-        clear = "<leader>cl",
-      },
-    },
-    keys = {
-      { "<leader>rs", "<cmd>IronRepl<cr>", desc = "Start repl" },
-      { "<leader>rr", "<cmd>IronRestart<cr>", desc = "Restart repl" },
-      { "<leader>rf", "<cmd>IronFocus<cr>", desc = "Focus repl" },
-      { "<leader>rh", "<cmd>IronHide<cr>", desc = "Hide repl" },
-    },
-    config = function(_, opts)
-      require("iron.core").setup(opts)
-    end,
-  },
-  {
-    "sourcegraph/sg.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-telescope/telescope.nvim"
-    },
-    opts = {
-      enable_cody = true,
-      accept_tos = true,
-      download_binaries = true
-    },
-    keys = {
-      { "<leader>ss", "<cmd>lua require('sg.extensions.telescope').fuzzy_search_results { input=vim.fn.expand('<cword>') }<CR>", desc = "SourceGraph Fuzzy Search" },
-    },
-  },
-  {
-    'akinsho/toggleterm.nvim',
-    version = "*",
-    config = true
-  },
-  -- {
-  --   'nvim-orgmode/orgmode',
-  --   dependencies = {
-  --     { 'ranjithshegde/orgWiki.nvim', lazy = true },
-  --     { 'nvim-treesitter/nvim-treesitter', lazy = true },
-  --   },
-  --   event = 'VeryLazy',
-  --   config = function()
-  --     -- Setup treesitter
-  --     require('nvim-treesitter.configs').setup({
-  --       highlight = {
-  --         enable = true,
-  --         additional_vim_regex_highlighting = { 'org' },
-  --       },
-  --       ensure_installed = { 'org' },
-  --     })
-  --
-  --     require('orgWiki').setup({
-  --       wiki_path = { '~/Documents/org/wiki' },
-  --       diary_path = '~/Documents/org/diary'
-  --     })
-  --
-  --     -- Setup orgmode
-  --     require('orgmode').setup({
-  --       org_agenda_files = '~/Documents/org/**/*',
-  --       org_default_notes_file = '~/Documents/org/refile.org',
-  --     })
-  --   end,
-  -- },
-  {
-    "will133/vim-dirdiff"
-  },
-  {
-    'rmagatti/auto-session',
-    config = function()
-    require("auto-session").setup {
-      log_level = "error",
-      auto_session_suppress_dirs = { "~/", "~/Documents", "/"},
-
-      auto_session_enable_last_session = false,
-
-      session_lens = {
-        -- If load_on_setup is set to false, one needs to eventually call `require("auto-session").setup_session_lens()` if they want to use session-lens.
-        buftypes_to_ignore = {}, -- list of buffer types what should not be deleted from current session
-        load_on_setup = true,
-        theme_conf = { border = true },
-        previewer = false,
-      },
-    }
-    end
-  },
-  {
-    "vimwiki/vimwiki",
-    init = function()
-      vim.g.vimwiki_list = {
-        {
-          path = '~/Documents/vimwiki',
-          syntax = 'default',
-          ext = '.wiki',
-        },
-      }
-    end,
-  },
-  -- {
-  --   "jakobkhansen/journal.nvim",
-  --   config = function()
-  --     require("journal").setup(
-  --       {
-  --         filetype = 'md',                    -- Filetype to use for new journal entries
-  --         root = '~/Documents/journal',       -- Root directory for journal entries
-  --         date_format = '%Y/%m/%d',           -- Date format for `:Journal <date-modifier>`
-  --         autocomplete_date_modifier = "end", -- "always"|"never"|"end". Enable date modifier autocompletion
-  --         journal = {
-  --           -- Default configuration for `:Journal <date-modifier>`
-  --           format = '%Y/%m-%B/daily/%d-%A',
-  --           template = '# %A %B %d %Y\n',
-  --           frequency = { day = 1 },
-  --
-  --           -- Nested configurations for `:Journal <type> <type> ... <date-modifier>`
-  --           entries = {
-  --             day = {
-  --               format = '%Y/%m-%B/daily/%d-%A', -- Format of the journal entry in the filesystem.
-  --               template = '# %A %B %d %Y\n',    -- Optional. Template used when creating a new journal entry
-  --               frequency = { day = 1 },         -- Optional. The frequency of the journal entry. Used for `:Journal next`, `:Journal -2` etc
-  --             },
-  --             week = {
-  --               format = '%Y/%m-%B/weekly/week-%W',
-  --               template = "# Week %W %B %Y\n",
-  --               frequency = { day = 7 },
-  --               date_modifier = "monday" -- Optional. Date modifier applied before other modifier given to `:Journal`
-  --             },
-  --             month = {
-  --               format = '%Y/%m-%B/%B',
-  --               template = "# %B %Y\n",
-  --               frequency = { month = 1 }
-  --             },
-  --             year = {
-  --               format = '%Y/%Y',
-  --               template = "# %Y\n",
-  --               frequency = { year = 1 }
-  --             },
-  --           },
-  --         }
-  --       }
-  --     )
-  --   end,
-  -- },
-  {
-  },
-  {
-    'alexghergh/nvim-tmux-navigation',
-    config = function()
-    require'nvim-tmux-navigation'.setup {
-        disable_when_zoomed = true, -- defaults to false
-        keybindings = {
-            left = "<C-h>",
-            down = "<C-j>",
-            up = "<C-k>",
-            right = "<C-l>",
-            last_active = "<C-\\>",
-            next = "<C-Space>",
-        }
-    }
-    end
-  },
-  {
-    'willothy/wezterm.nvim',
-    config = true
-  },
-  {
-    'mrjones2014/smart-splits.nvim'
-  },
-  {
-    'ackeraa/todo.nvim',
-    config = function()
-      require("todo").setup {
-        opts = {
-          file_path = "/Users/miker/Documents/todo.txt"
-        }
-      }
-    end
-  }
-
-
-  -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
-  --       These are some example plugins that I've included in the kickstart repository.
-  --       Uncomment any of the lines below to enable them.
-  -- require 'kickstart.plugins.autoformat',
-  -- require 'kickstart.plugins.debug',
-
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
-  --    up-to-date with whatever is in the kickstart repo.
-  --    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  --
-  --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-  -- { import = 'custom.plugins' },
-}, {})
+-- require('lazy').setup({
+--   -- NOTE: First, some plugins that don't require any configuration
+--
+--   -- Git related plugins
+--   'tpope/vim-fugitive',
+--   'tpope/vim-rhubarb',
+--
+--   -- Detect tabstop and shiftwidth automatically
+--   'tpope/vim-sleuth',
+--
+--   -- NOTE: This is where your plugins related to LSP can be installed.
+--   --  The configuration is done below. Search for lspconfig to find it below.
+--   {
+--     -- LSP Configuration & Plugins
+--     'neovim/nvim-lspconfig',
+--     dependencies = {
+--       -- Automatically install LSPs to stdpath for neovim
+--       'williamboman/mason.nvim',
+--       'williamboman/mason-lspconfig.nvim',
+--
+--       -- Useful status updates for LSP
+--       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
+--       { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
+--
+--       -- Additional lua configuration, makes nvim stuff amazing!
+--       'folke/neodev.nvim',
+--     },
+--   },
+--
+--   {
+--     -- Autocompletion
+--     'hrsh7th/nvim-cmp',
+--     dependencies = {
+--       -- Snippet Engine & its associated nvim-cmp source
+--       'L3MON4D3/LuaSnip',
+--       'saadparwaiz1/cmp_luasnip',
+--
+--       -- Adds LSP completion capabilities
+--       'hrsh7th/cmp-nvim-lsp',
+--
+--       -- Adds a number of user-friendly snippets
+--       'rafamadriz/friendly-snippets',
+--     },
+--   },
+--
+--   -- Useful plugin to show you pending keybinds.
+--   {
+--     'folke/which-key.nvim',
+--     event = "VeryLazy",
+--     opts = {},
+--     keys = {
+--       {
+--         "<leader>?",
+--         function()
+--           require("which-key").show({ global = false })
+--         end,
+--         desc = "Buffer Local Keymaps (which-key)",
+--       },
+--     },
+--   },
+--   {
+--     'echasnovski/mini.nvim', version = false
+--   },
+--   {
+--     -- Adds git related signs to the gutter, as well as utilities for managing changes
+--     'lewis6991/gitsigns.nvim',
+--     opts = {
+--       -- See `:help gitsigns.txt`
+--       signs = {
+--         add = { text = '+' },
+--         change = { text = '~' },
+--         delete = { text = '_' },
+--         topdelete = { text = '‾' },
+--         changedelete = { text = '~' },
+--       },
+--       on_attach = function(bufnr)
+--         vim.keymap.set('n', '<leader>hp', require('gitsigns').preview_hunk, { buffer = bufnr, desc = 'Preview git hunk' })
+--
+--         -- don't override the built-in and fugitive keymaps
+--         local gs = package.loaded.gitsigns
+--         vim.keymap.set({ 'n', 'v' }, ']c', function()
+--           if vim.wo.diff then
+--             return ']c'
+--           end
+--           vim.schedule(function()
+--             gs.next_hunk()
+--           end)
+--           return '<Ignore>'
+--         end, { expr = true, buffer = bufnr, desc = 'Jump to next hunk' })
+--         vim.keymap.set({ 'n', 'v' }, '[c', function()
+--           if vim.wo.diff then
+--             return '[c'
+--           end
+--           vim.schedule(function()
+--             gs.prev_hunk()
+--           end)
+--           return '<Ignore>'
+--         end, { expr = true, buffer = bufnr, desc = 'Jump to previous hunk' })
+--       end,
+--     },
+--   },
+--
+--   -- {
+--   --   -- Theme inspired by Atom
+--   --   'navarasu/onedark.nvim',
+--   --   priority = 1000,
+--   --   config = function()
+--   --     require('onedark').setup {
+--   --       style = 'deep'
+--   --     }
+--   --     vim.cmd.colorscheme 'onedark'
+--   --   end,
+--   -- },
+--   {
+--     -- Theme inspired by Atom
+--     'sainnhe/gruvbox-material',
+--     priority = 1000,
+--     config = function()
+--       vim.cmd.colorscheme 'gruvbox-material'
+--     end,
+--   },
+--   {
+--     'EdenEast/nightfox.nvim',
+--     priority = 1000
+--   },
+--   {
+--     'catppuccin/nvim', name = 'catppuccin', priority = 1000
+--   },
+--   {
+--     'Mofiqul/vscode.nvim', priority = 1000
+--   },
+--   -- {
+--   --   "folke/tokyonight.nvim",
+--   --   lazy = false,
+--   --   priority = 1000,
+--   --   opts = {},
+--   --   config = function()
+--   --     vim.cmd.colorscheme 'tokyonight-night'
+--   --   end,
+--   --
+--   -- },
+--   -- {
+--   --   "catppuccin/nvim",
+--   --   name = "catppuccin",
+--   --   priority = 1000,
+--   --   opts = {
+--   --     flavour = "mocha", -- latte, frappe, macchiato, mocha
+--   --     background = { -- :h background
+--   --       light = "latte",
+--   --       dark = "mocha",
+--   --     },
+--   --     transparent_background = false, -- disables setting the background color.
+--   --     show_end_of_buffer = false, -- shows the '~' characters after the end of buffers
+--   --     term_colors = false, -- sets terminal colors (e.g. `g:terminal_color_0`)
+--   --     dim_inactive = {
+--   --       enabled = false, -- dims the background color of inactive window
+--   --       shade = "dark",
+--   --       percentage = 0.15, -- percentage of the shade to apply to the inactive window
+--   --     },
+--   --     integrations = {
+--   --       cmp = true,
+--   --       gitsigns = true,
+--   --       nvimtree = true,
+--   --       treesitter = true,
+--   --       notify = false,
+--   --       mini = {
+--   --         enabled = true,
+--   --         indentscope_color = "",
+--   --       },
+--   --     },
+--   --     color_overrides = {
+--   --       mocha = { -- custom
+--   --         rosewater = "#ffc6be",
+--   --         flamingo = "#fb4934",
+--   --         pink = "#ff75a0",
+--   --         mauve = "#f2594b",
+--   --         red = "#f2594b",
+--   --         maroon = "#fe8019",
+--   --         peach = "#FFAD7D",
+--   --         yellow = "#e9b143",
+--   --         green = "#b0b846",
+--   --         teal = "#8bba7f",
+--   --         sky = "#7daea3",
+--   --         sapphire = "#689d6a",
+--   --         blue = "#80aa9e",
+--   --         lavender = "#e2cca9",
+--   --         text = "#e2cca9",
+--   --         subtext1 = "#e2cca9",
+--   --         subtext0 = "#e2cca9",
+--   --         overlay2 = "#8C7A58",
+--   --         overlay1 = "#735F3F",
+--   --         overlay0 = "#806234",
+--   --         surface2 = "#665c54",
+--   --         surface1 = "#3c3836",
+--   --         surface0 = "#32302f",
+--   --         base = "#282828",
+--   --         mantle = "#1d2021",
+--   --         crust = "#1b1b1b",
+--   --
+--   --       },
+--   --     },
+--   --   },
+--   --   config = function()
+--   --     vim.cmd.colorscheme 'catppuccin'
+--   --   end,
+--   --
+--   -- },
+--
+--   -- {
+--   --   "rebelot/kanagawa.nvim",
+--   --   priority = 1000,
+--   --   opts = {
+--   --     undercurl = true,
+--   --     commentStyle = {
+--   --       italic = true
+--   --     },
+--   --     functionStyle = {},
+--   --     keywordStyle = {
+--   --       italic = true
+--   --     },
+--   --     statementStyle = {
+--   --       italic = true
+--   --     },
+--   --     theme = "dragon"
+--   --   },
+--   --   config = function()
+--   --     vim.cmd.colorscheme 'kanagawa-dragon'
+--   --   end,
+--   -- },
+--
+--   {
+--     -- Set lualine as statusline
+--     'nvim-lualine/lualine.nvim',
+--     -- See `:help lualine.txt`
+--     opts = {
+--       options = {
+--         icons_enabled = false,
+--         theme = 'onedark',
+--         component_separators = '|',
+--         section_separators = '',
+--       },
+--     },
+--   },
+--
+--   {
+--     -- Add indentation guides even on blank lines
+--     'lukas-reineke/indent-blankline.nvim',
+--     -- Enable `lukas-reineke/indent-blankline.nvim`
+--     -- See `:help ibl`
+--     main = 'ibl',
+--     opts = {},
+--   },
+--
+--   -- "gc" to comment visual regions/lines
+--   { 'numToStr/Comment.nvim', opts = {} },
+--
+--   -- Fuzzy Finder (files, lsp, etc)
+--   {
+--     'nvim-telescope/telescope.nvim',
+--     branch = '0.1.x',
+--     dependencies = {
+--       'nvim-lua/plenary.nvim',
+--       -- Fuzzy Finder Algorithm which requires local dependencies to be built.
+--       -- Only load if `make` is available. Make sure you have the system
+--       -- requirements installed.
+--       {
+--         'nvim-telescope/telescope-fzf-native.nvim',
+--         -- NOTE: If you are having trouble with this installation,
+--         --       refer to the README for telescope-fzf-native for more instructions.
+--         build = 'make',
+--         cond = function()
+--           return vim.fn.executable 'make' == 1
+--         end,
+--       },
+--     },
+--   },
+--
+--   {
+--     -- Highlight, edit, and navigate code
+--     'nvim-treesitter/nvim-treesitter',
+--     dependencies = {
+--       'nvim-treesitter/nvim-treesitter-textobjects',
+--     },
+--     build = ':TSUpdate',
+--   },
+--   {
+--     'nvim-tree/nvim-tree.lua',
+--     dependencies = {
+--       'nvim-tree/nvim-web-devicons'
+--     },
+--     opts = {
+--       sort_by = "case_sensitive",
+--       view = {
+--         width = 30,
+--       },
+--       renderer = {
+--         group_empty = true,
+--       },
+--       filters = {
+--         dotfiles = true,
+--       },
+--     }
+--   },
+--   {
+--     'Vigemus/iron.nvim',
+--     opts = {
+--       config = {
+--         scratch_repl = true,
+--         repl_definition = {
+--           javascript = {
+--             command = {"ts-node"}
+--           }
+--         },
+--       },
+--       highlight = {
+--           italic = true
+--       },
+--       ignore_blank_lines = true, -- ignore blank lines when sending visual select lines
+--       keymaps = {
+--         send_motion = "<leader>sc",
+--         visual_send = "<leader>sc",
+--         send_file = "<leader>sf",
+--         send_line = "<leader>sl",
+--         send_until_cursor = "<leader>su",
+--         send_mark = "<leader>sm",
+--         mark_motion = "<leader>mc",
+--         mark_visual = "<leader>mc",
+--         remove_mark = "<leader>md",
+--         cr = "<leader>s<cr>",
+--         exit = "<leader>sq",
+--         clear = "<leader>cl",
+--       },
+--     },
+--     keys = {
+--       { "<leader>rs", "<cmd>IronRepl<cr>", desc = "Start repl" },
+--       { "<leader>rr", "<cmd>IronRestart<cr>", desc = "Restart repl" },
+--       { "<leader>rf", "<cmd>IronFocus<cr>", desc = "Focus repl" },
+--       { "<leader>rh", "<cmd>IronHide<cr>", desc = "Hide repl" },
+--     },
+--     config = function(_, opts)
+--       require("iron.core").setup(opts)
+--     end,
+--   },
+--   {
+--     "sourcegraph/sg.nvim",
+--     dependencies = {
+--       "nvim-lua/plenary.nvim",
+--       "nvim-telescope/telescope.nvim"
+--     },
+--     opts = {
+--       enable_cody = true,
+--       accept_tos = true,
+--       download_binaries = true
+--     },
+--     keys = {
+--       { "<leader>ss", "<cmd>lua require('sg.extensions.telescope').fuzzy_search_results { input=vim.fn.expand('<cword>') }<CR>", desc = "SourceGraph Fuzzy Search" },
+--     },
+--   },
+--   {
+--     'akinsho/toggleterm.nvim',
+--     version = "*",
+--     config = true
+--   },
+--   -- {
+--   --   'nvim-orgmode/orgmode',
+--   --   dependencies = {
+--   --     { 'ranjithshegde/orgWiki.nvim', lazy = true },
+--   --     { 'nvim-treesitter/nvim-treesitter', lazy = true },
+--   --   },
+--   --   event = 'VeryLazy',
+--   --   config = function()
+--   --     -- Setup treesitter
+--   --     require('nvim-treesitter.configs').setup({
+--   --       highlight = {
+--   --         enable = true,
+--   --         additional_vim_regex_highlighting = { 'org' },
+--   --       },
+--   --       ensure_installed = { 'org' },
+--   --     })
+--   --
+--   --     require('orgWiki').setup({
+--   --       wiki_path = { '~/Documents/org/wiki' },
+--   --       diary_path = '~/Documents/org/diary'
+--   --     })
+--   --
+--   --     -- Setup orgmode
+--   --     require('orgmode').setup({
+--   --       org_agenda_files = '~/Documents/org/**/*',
+--   --       org_default_notes_file = '~/Documents/org/refile.org',
+--   --     })
+--   --   end,
+--   -- },
+--   {
+--     "will133/vim-dirdiff"
+--   },
+--   {
+--     'rmagatti/auto-session',
+--     config = function()
+--     require("auto-session").setup {
+--       log_level = "error",
+--       auto_session_suppress_dirs = { "~/", "~/Documents", "/"},
+--
+--       auto_session_enable_last_session = false,
+--
+--       session_lens = {
+--         -- If load_on_setup is set to false, one needs to eventually call `require("auto-session").setup_session_lens()` if they want to use session-lens.
+--         buftypes_to_ignore = {}, -- list of buffer types what should not be deleted from current session
+--         load_on_setup = true,
+--         theme_conf = { border = true },
+--         previewer = false,
+--       },
+--     }
+--     end
+--   },
+--   {
+--     "vimwiki/vimwiki",
+--     init = function()
+--       vim.g.vimwiki_list = {
+--         {
+--           path = '~/Documents/vimwiki',
+--           syntax = 'default',
+--           ext = '.wiki',
+--         },
+--       }
+--     end,
+--   },
+--   -- {
+--   --   "jakobkhansen/journal.nvim",
+--   --   config = function()
+--   --     require("journal").setup(
+--   --       {
+--   --         filetype = 'md',                    -- Filetype to use for new journal entries
+--   --         root = '~/Documents/journal',       -- Root directory for journal entries
+--   --         date_format = '%Y/%m/%d',           -- Date format for `:Journal <date-modifier>`
+--   --         autocomplete_date_modifier = "end", -- "always"|"never"|"end". Enable date modifier autocompletion
+--   --         journal = {
+--   --           -- Default configuration for `:Journal <date-modifier>`
+--   --           format = '%Y/%m-%B/daily/%d-%A',
+--   --           template = '# %A %B %d %Y\n',
+--   --           frequency = { day = 1 },
+--   --
+--   --           -- Nested configurations for `:Journal <type> <type> ... <date-modifier>`
+--   --           entries = {
+--   --             day = {
+--   --               format = '%Y/%m-%B/daily/%d-%A', -- Format of the journal entry in the filesystem.
+--   --               template = '# %A %B %d %Y\n',    -- Optional. Template used when creating a new journal entry
+--   --               frequency = { day = 1 },         -- Optional. The frequency of the journal entry. Used for `:Journal next`, `:Journal -2` etc
+--   --             },
+--   --             week = {
+--   --               format = '%Y/%m-%B/weekly/week-%W',
+--   --               template = "# Week %W %B %Y\n",
+--   --               frequency = { day = 7 },
+--   --               date_modifier = "monday" -- Optional. Date modifier applied before other modifier given to `:Journal`
+--   --             },
+--   --             month = {
+--   --               format = '%Y/%m-%B/%B',
+--   --               template = "# %B %Y\n",
+--   --               frequency = { month = 1 }
+--   --             },
+--   --             year = {
+--   --               format = '%Y/%Y',
+--   --               template = "# %Y\n",
+--   --               frequency = { year = 1 }
+--   --             },
+--   --           },
+--   --         }
+--   --       }
+--   --     )
+--   --   end,
+--   -- },
+--   {
+--   },
+--   {
+--     'alexghergh/nvim-tmux-navigation',
+--     config = function()
+--     require'nvim-tmux-navigation'.setup {
+--         disable_when_zoomed = true, -- defaults to false
+--         keybindings = {
+--             left = "<C-h>",
+--             down = "<C-j>",
+--             up = "<C-k>",
+--             right = "<C-l>",
+--             last_active = "<C-\\>",
+--             next = "<C-Space>",
+--         }
+--     }
+--     end
+--   },
+--   {
+--     'willothy/wezterm.nvim',
+--     config = true
+--   },
+--   {
+--     'mrjones2014/smart-splits.nvim'
+--   },
+--   {
+--     'ackeraa/todo.nvim',
+--     config = function()
+--       require("todo").setup {
+--         opts = {
+--           file_path = "/Users/miker/Documents/todo.txt"
+--         }
+--       }
+--     end
+--   }
+--
+--
+--   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
+--   --       These are some example plugins that I've included in the kickstart repository.
+--   --       Uncomment any of the lines below to enable them.
+--   -- require 'kickstart.plugins.autoformat',
+--   -- require 'kickstart.plugins.debug',
+--
+--   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
+--   --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
+--   --    up-to-date with whatever is in the kickstart repo.
+--   --    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
+--   --
+--   --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
+--   -- { import = 'custom.plugins' },
+-- }, {})
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -881,8 +883,8 @@ cmp.setup {
   },
 }
 
-require('sg').setup({})
-vim.keymap.set('n', '<leader>ss', function() require('sg.extensions.telescope').fuzzy_search_results({ input = vim.fn.expand('<cword>') }) end, { desc = '[S]earch by [S]ourceGraph Fuzzy Search' })
+-- require('sg').setup({})
+-- vim.keymap.set('n', '<leader>ss', function() require('sg.extensions.telescope').fuzzy_search_results({ input = vim.fn.expand('<cword>') }) end, { desc = '[S]earch by [S]ourceGraph Fuzzy Search' })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
