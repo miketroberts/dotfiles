@@ -1,5 +1,5 @@
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+vim.g.mapleader = ','
+vim.g.maplocalleader = ','
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
@@ -22,7 +22,29 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup("plugins")
+local opts = {
+	change_detection = {
+		-- Don't notify us every time a change is made to the configuration
+		notify = false,
+	},
+	checker = {
+		-- Automatically check for package updates
+		enabled = true,
+		-- Don't spam us with notification every time there is an update available
+		notify = false,
+	},
+}
+
+-- Load the options from the config/options.lua file
+require("config.options")
+-- Load the keymaps from the config/keymaps.lua file
+require("config.keymaps")
+-- Load the auto commands from the config/autocmds.lua file
+require("config.autocmds")
+-- Setup lazy, this should always be last
+-- Tell lazy that all plugin specs are found in the plugins directory
+-- Pass it the options we specified above
+require("lazy").setup("plugins", opts)
 
 -- require('lazy').setup({
 --   -- NOTE: First, some plugins that don't require any configuration
@@ -654,10 +676,10 @@ vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = 
 vim.defer_fn(function()
   require('nvim-treesitter.configs').setup {
     -- Add languages to be installed here that you want installed for treesitter
-    ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash' },
+    ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash', 'graphql', 'java' },
 
     -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
-    auto_install = false,
+    auto_install = true,
 
     highlight = { enable = true },
     indent = { enable = true },
@@ -762,6 +784,11 @@ local on_attach = function(_, bufnr)
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   end, '[W]orkspace [L]ist Folders')
 
+  -- Diagnostics
+  nmap("gl", vim.diagnostic.open_float, "[O]pen [D]iagnostics")
+  nmap("[d", vim.diagnostic.goto_prev, "[G]oto [P]revious Diagnostics")
+  nmap("]d", vim.diagnostic.goto_next, "[G]oto [N]ext Diagnostics")
+
   -- Create a command `:Format` local to the LSP buffer
   vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
     vim.lsp.buf.format()
@@ -781,8 +808,8 @@ end
 
 -- mason-lspconfig requires that these setup functions are called in this order
 -- before setting up the servers.
-require('mason').setup()
-require('mason-lspconfig').setup()
+-- require('mason').setup()
+-- require('mason-lspconfig').setup()
 
 -- Enable the following language servers
 --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -792,96 +819,93 @@ require('mason-lspconfig').setup()
 --
 --  If you want to override the default filetypes that your language server will attach to you can
 --  define the property 'filetypes' to the map in question.
-local servers = {
-  -- clangd = {},
-  gopls = {},
-  jdtls = {},
-
-  -- pyright = {},
-  -- rust_analyzer = {},
-  tsserver = {},
-  -- html = { filetypes = { 'html', 'twig', 'hbs'} },
-
-  lua_ls = {
-    Lua = {
-      workspace = { checkThirdParty = false },
-      telemetry = { enable = false },
-    },
-  },
-}
-
--- Setup neovim lua configuration
-require('neodev').setup()
+-- local servers = {
+--     -- clangd = {},
+--     gopls = {},
+--     graphql = {},
+--     -- pyright = {},
+--     -- rust_analyzer = {},
+--     ts_ls = {},
+--     -- html = { filetypes = { 'html', 'twig', 'hbs'} },
+--
+--     lua_ls = {
+--         Lua = {
+--             workspace = { checkThirdParty = false },
+--             telemetry = { enable = false },
+--         },
+--     },
+-- }
+--
 
 -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-
--- Ensure the servers above are installed
-local mason_lspconfig = require 'mason-lspconfig'
-
-mason_lspconfig.setup {
-  ensure_installed = vim.tbl_keys(servers),
-}
-
-mason_lspconfig.setup_handlers {
-  function(server_name)
-    require('lspconfig')[server_name].setup {
-      capabilities = capabilities,
-      on_attach = on_attach,
-      settings = servers[server_name],
-      filetypes = (servers[server_name] or {}).filetypes,
-    }
-  end,
-}
+-- local capabilities = vim.lsp.protocol.make_client_capabilities()
+-- capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+--
+-- -- Ensure the servers above are installed
+-- local mason_lspconfig = require 'mason-lspconfig'
+--
+-- mason_lspconfig.setup {
+--   ensure_installed = vim.tbl_keys(servers),
+-- }
+--
+-- mason_lspconfig.setup_handlers {
+--   function(server_name)
+--     require('lspconfig')[server_name].setup {
+--       capabilities = capabilities,
+--       on_attach = on_attach,
+--       settings = servers[server_name],
+--       filetypes = (servers[server_name] or {}).filetypes,
+--     }
+--   end,
+-- }
 
 -- [[ Configure nvim-cmp ]]
 -- See `:help cmp`
-local cmp = require 'cmp'
-local luasnip = require 'luasnip'
-require('luasnip.loaders.from_vscode').lazy_load()
-luasnip.config.setup {}
-
-cmp.setup {
-  snippet = {
-    expand = function(args)
-      luasnip.lsp_expand(args.body)
-    end,
-  },
-  mapping = cmp.mapping.preset.insert {
-    ['<C-n>'] = cmp.mapping.select_next_item(),
-    ['<C-p>'] = cmp.mapping.select_prev_item(),
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete {},
-    ['<CR>'] = cmp.mapping.confirm {
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
-    },
-    ['<Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif luasnip.expand_or_locally_jumpable() then
-        luasnip.expand_or_jump()
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
-    ['<S-Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif luasnip.locally_jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
-  },
-  sources = {
-    { name = 'nvim_lsp' },
-    { name = 'luasnip' },
-  },
-}
+-- local cmp = require 'cmp'
+-- local luasnip = require 'luasnip'
+-- require('luasnip.loaders.from_vscode').lazy_load()
+-- luasnip.config.setup {}
+--
+-- cmp.setup {
+--   snippet = {
+--     expand = function(args)
+--       luasnip.lsp_expand(args.body)
+--     end,
+--   },
+--   mapping = cmp.mapping.preset.insert {
+--     ['<C-n>'] = cmp.mapping.select_next_item(),
+--     ['<C-p>'] = cmp.mapping.select_prev_item(),
+--     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+--     ['<C-f>'] = cmp.mapping.scroll_docs(4),
+--     ['<C-Space>'] = cmp.mapping.complete {},
+--     ['<CR>'] = cmp.mapping.confirm {
+--       behavior = cmp.ConfirmBehavior.Replace,
+--       select = true,
+--     },
+--     ['<Tab>'] = cmp.mapping(function(fallback)
+--       if cmp.visible() then
+--         cmp.select_next_item()
+--       elseif luasnip.expand_or_locally_jumpable() then
+--         luasnip.expand_or_jump()
+--       else
+--         fallback()
+--       end
+--     end, { 'i', 's' }),
+--     ['<S-Tab>'] = cmp.mapping(function(fallback)
+--       if cmp.visible() then
+--         cmp.select_prev_item()
+--       elseif luasnip.locally_jumpable(-1) then
+--         luasnip.jump(-1)
+--       else
+--         fallback()
+--       end
+--     end, { 'i', 's' }),
+--   },
+--   sources = {
+--     { name = 'nvim_lsp' },
+--     { name = 'luasnip' },
+--   },
+-- }
 
 -- require('sg').setup({})
 -- vim.keymap.set('n', '<leader>ss', function() require('sg.extensions.telescope').fuzzy_search_results({ input = vim.fn.expand('<cword>') }) end, { desc = '[S]earch by [S]ourceGraph Fuzzy Search' })
@@ -907,18 +931,26 @@ cmp.setup {
 if vim.g.neovide then
     vim.g.neovide_hide_mouse_when_typing = true
     vim.g.neovide_remember_window_size = false
-    vim.g.neovide_cursor_animation_length = 0.01
-    vim.g.neovide_cursor_vfx_mode = "wireframe"
-    vim.o.guifont = "IosevkaTerm Nerd Font"
+    vim.g.neovide_cursor_animation_length = 0.00
+    vim.g.neovide_scroll_animation_length = 0.00
+    vim.g.neovide_cursor_vfx_mode = "ripple"
+    vim.g.neovide_cursor_smooth_blink = true
+    vim.opt.guicursor = {
+        "n-v-c:block-Cursor/lCursor",         -- Block cursor in normal, visual, and command modes
+        "i:ver25-blinkwait700-blinkoff400-blinkon250-Cursor/lCursor",  -- Blinking vertical line in insert mode
+        "r-cr-o:hor20-Cursor/lCursor",        -- Horizontal line cursor in replace, command-line replace, and operator-pending modes
+        "a:blinkwait700-blinkoff400-blinkon250",  -- Global blinking settings for all modes
+    }
+    -- vim.o.guifont = "LiterationMono Nerd Font:h13"
+    vim.o.guifont = "Input:h14"
     vim.g.neovide_floating_blur_amount_x = 2.0
     vim.g.neovide_floating_blur_amount_y = 2.0
     vim.g.neovide_padding_top = 0
     vim.g.neovide_padding_bottom = 0
     vim.g.neovide_padding_right = 0
     vim.g.neovide_padding_left = 0
-    vim.g.linespace = 0
-    vim.g.neovide_cursor_smooth_blink = true
-    vim.g.neovide_scale_factor = 1.1
+    vim.g.linespace = 1.4
+    vim.g.neovide_scale_factor = 1.0
     vim.g.neovide_text_gamma=0.0
 
 
@@ -973,3 +1005,4 @@ require('lualine').setup {
   inactive_winbar = {},
   extensions = {}
 }
+

@@ -1,0 +1,1 @@
+{"createdag":{"body":["{","  \"dag_id\": \"$1\",","  \"edges\": [","    { \"src_node_id\": \"$2\",    \"src_port\":\"$3\",","      \"dst_node_id\": \"$4\", \"dst_port\":\"$5\" }","  ],","  \"status\": \"PUBLISHED\"","}"],"prefix":"createdag"}}

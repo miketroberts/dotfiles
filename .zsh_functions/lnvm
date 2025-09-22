@@ -1,0 +1,5 @@
+if ! [[ -v NVM_BIN ]]; then
+  . /opt/homebrew/opt/nvm/nvm.sh
+fi
+echo $NVM_BIN
+

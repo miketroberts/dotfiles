@@ -1,0 +1,4 @@
+if ! [[ -v JAVA_HOME ]]; then
+    . "$SDKMAN_DIR/bin/sdkman-init.sh"
+fi
+echo $JAVA_HOME

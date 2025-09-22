@@ -1,0 +1,11 @@
+{
+    "createdag": {
+        "prefix": [ "createdag" ],
+        "body": [
+            "\"dag_id\": \"${1:dag_id}\",",
+            "\"edges\": [",
+            "]",
+            "\"status\": \"PUBLISHED\""
+        ]
+    }
+}

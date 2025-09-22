@@ -19,11 +19,11 @@ filetype indent on                              " Enable filetype specific inden
     set showmatch                                   " show matching brackets
     set hidden                                      " allow changes to hidden buffers
 
-    set tabstop=4
-    set shiftwidth=4                                " number of spaces for auto indent
+    set tabstop=2
+    set shiftwidth=2                                " number of spaces for auto indent
     set smarttab
     set expandtab                                   " Get rid of tabs
-    set softtabstop=4                               " what distance should a tab *feel* like
+    set softtabstop=2                               " what distance should a tab *feel* like
     set autoindent                                  " always auto indent
 
     set smarttab cinwords=if,elif,else,for,while,try,except,finally,def,class
@@ -62,8 +62,6 @@ filetype indent on                              " Enable filetype specific inden
 
     set backspace=indent,eol,start                  " Backspace can remove anything.
 
-    let mapleader=","                               " Change the map leader to something I can use.
-
     set t_Co=256
     set t_ut=                                       " Clear the Background Color Erase, or tmux will bleed through.
                                                     " https://sunaku.github.io/vim-256color-bce.html
@@ -91,3 +89,4 @@ filetype indent on                              " Enable filetype specific inden
 nnoremap <silent> <leader>fp <cmd>Telescope find_files<cr>
 nnoremap <silent> <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <silent> <leader>fb <cmd>Telescope buffers<cr>
+

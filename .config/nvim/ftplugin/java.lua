@@ -1,0 +1,57 @@
+--
+-- function attach_to_debug()
+--     local dap = require('dap')
+--     dap.configurations.java = {
+--         {
+--             type = 'java';
+--             request = 'attach';
+--             name = "Debug (Attach) - Remote";
+--             hostName = "127.0.0.1";
+--             port = 5005;
+--         },
+--     }
+--     dap.continue()
+-- end
+--
+--
+-- local config = {
+--     cmd_env = {
+--         JAVA_HOME = "/Users/mikeroberts/.sdkman/candidates/java/21.0.6-zulu";
+--     },
+--     cmd = {
+--         '/opt/homebrew/bin/jdtls',
+--         "-configuration", "/Users/mikeroberts/.cache/jdtls/config",
+--         "-data", "/Users/mikeroberts/.cache/jdtls/workspace"
+--     },
+--     root_dir = vim.fs.dirname(vim.fs.find({'gradlew', '.git', 'mvnw'}, { upward = true })[1]),
+--     init_options = {
+--         bundles = {
+--             vim.fn.glob("/Users/mikeroberts/src/public/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar", 1);
+--         }
+--     },
+--     settings = {
+--         java = {
+--             configuration = {
+--                 updateBuildConfiguration = "interactive",
+--                 runtimes = {
+--                     {
+--                         name = "JavaSE-21",
+--                         path = "/Users/mikeroberts/.sdkman/candidates/java/21.0.6-zulu/",
+--                     },
+--                     {
+--                         name = "JavaSE-17",
+--                         path = "/Users/mikeroberts/.sdkman/candidates/java/17.0.3-tem/",
+--                     },
+--                     {
+--                         name = "JavaSE-13",
+--                         path = "/Users/mikeroberts/.sdkman/candidates/java/13.0.14-zulu/",
+--                     }
+--                 }
+--             }
+--         }
+--     }
+-- }
+--
+-- vim.cmd "command! -buffer -nargs=? -complete=custom,v:lua.require'jdtls'._complete_set_runtime JdtSetRuntime lua require('jdtls').set_runtime(<f-args>)"
+--
+-- require('jdtls').start_or_attach(config)

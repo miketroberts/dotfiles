@@ -1,12 +1,25 @@
-theme = GruvboxDarkHard
-font-family = 0xProto Nerd Font Mono
+#theme = GruvboxDarkHard
+#theme = zenwritten_dark
+#theme = xcodedarkhc
+#theme = xcodedarkhc
+#theme = catppuccin-macchiato
+#theme = catppuccin-mocha
+#theme = monokai_pro_octagon
+#theme = Monokai Pro Octagon
+#theme = Liquid Carbon Transparent
+theme = vague
+#font-family = "0xProto Nerd Font Mono"
+#font-family = "JetBrainsMono Nerd Font"
+font-family = BitstreamWera Nerd Font Mono
 
 font-feature                   = calt
 font-feature                   = liga
 font-feature                   = ss13
 
-font-size                      = 12
+font-size                      = 14
 window-inherit-font-size       = true
+
+auto-update                    = check
 
 adjust-cursor-thickness        = 3
 adjust-underline-position      = 3
@@ -23,6 +36,8 @@ mouse-hide-while-typing        = true
 mouse-scroll-multiplier        = 2
 macos-titlebar-style           = transparent
 macos-titlebar-proxy-icon      = hidden
+macos-icon                     = official
+macos-icon-frame               = chrome
 window-padding-balance         = true 
 window-save-state              = always
 window-colorspace              = "display-p3"
@@ -43,9 +58,9 @@ keybind = cmd+s>x=close_surface
 keybind = cmd+s>n=new_window
 
 # tabs 
-keybind = cmd+s>c=new_tab
-keybind = cmd+s>shift+l=next_tab
-keybind = cmd+s>shift+h=previous_tab
+keybind = ctrl+a>c=new_tab
+keybind = ctrl+a>n=next_tab
+keybind = ctrl+a>p=previous_tab
 keybind = cmd+s>comma=move_tab:-1
 keybind = cmd+s>period=move_tab:1
 
@@ -61,17 +76,20 @@ keybind = cmd+s>8=goto_tab:8
 keybind = cmd+s>9=goto_tab:9
 
 # split
-keybind = cmd+s>\=new_split:right
-keybind = cmd+s>-=new_split:down
+keybind = ctrl+a>v=new_split:right
+keybind = ctrl+a>s=new_split:down
 
-keybind = cmd+s>j=goto_split:bottom
-keybind = cmd+s>k=goto_split:top
-keybind = cmd+s>h=goto_split:left
-keybind = cmd+s>l=goto_split:right
+keybind = ctrl+a>j=goto_split:bottom
+keybind = ctrl+a>k=goto_split:top
+keybind = ctrl+a>h=goto_split:left
+keybind = ctrl+a>l=goto_split:right
 
-keybind = cmd+s>z=toggle_split_zoom
+keybind = ctrl+a>z=toggle_split_zoom
 
 keybind = cmd+s>e=equalize_splits
+
+keybind = ctrl+a>semicolon=toggle_command_palette
+keybind = global:cmd+backquote=toggle_quick_terminal
 
 # other
 copy-on-select = clipboard
