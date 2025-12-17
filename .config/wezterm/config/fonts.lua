@@ -4,7 +4,7 @@ local wezterm = require("wezterm")
 local font_family = "JetBrainsMono Nerd Font"
 -- local font_family = 'CartographCF Nerd Font'
 
-local font_size = 9.75
+local font_size = 13
 
 return {
 	font = wezterm.font({

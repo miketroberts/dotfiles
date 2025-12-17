@@ -5,6 +5,7 @@ return {
 	exit_behavior_messaging = "Verbose",
 	status_update_interval = 1000,
 	audible_bell = "Disabled",
+	native_macos_fullscreen_mode = true,
 
 	scrollback_lines = 20000,
 
