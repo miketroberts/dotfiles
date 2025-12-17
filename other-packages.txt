@@ -1,0 +1,2 @@
+npm install -g tree-sitter-cli
+nvm install --lts

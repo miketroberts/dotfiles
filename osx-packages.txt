@@ -1,0 +1,7 @@
+nvm
+neovim
+ripgrep
+fd
+fzf
+cmake
+gh
