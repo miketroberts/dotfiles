@@ -1,4 +1,3 @@
-neovim
 fd-find
 cmake
 direnv
