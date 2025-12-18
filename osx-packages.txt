@@ -5,3 +5,4 @@ fd
 fzf
 cmake
 gh
+direnv
