@@ -29,6 +29,33 @@ install-homebrew:
 		echo "Homebrew already installed."; \
 	fi
 
+# Updated: Error-Resistant Command Execution
+run-other:
+	@if [ -f $(OTHER_FILE) ]; then \
+		echo "--- Running custom commands from $(OTHER_FILE) ---"; \
+		ERRORS=0; \
+		while IFS= read -r line || [ -n "$$line" ]; do \
+			case "$$line" in \
+				\#*) ;; \
+				"") ;; \
+				*) \
+					echo "Executing: $$line"; \
+					if ! eval "$$line"; then \
+						echo "  >> ERROR: Command failed: $$line"; \
+						ERRORS=$$((ERRORS + 1)); \
+					fi \
+					;; \
+				esac; \
+			done < $(OTHER_FILE); \
+			if [ $$ERRORS -ne 0 ]; then \
+				echo "--- Finished with $$ERRORS error(s). ---"; \
+				exit 1; \
+			fi; \
+			echo "--- All custom commands finished successfully. ---"; \
+		else \
+			echo "No $(OTHER_FILE) found, skipping."; \
+		fi
+
 # Universal: Execute commands from other-packages.txt
 run-other:
 	@if [ -f $(OTHER_FILE) ]; then \
