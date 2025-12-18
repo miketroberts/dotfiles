@@ -4,27 +4,35 @@
 sudo chsh "$(id -un)" --shell "/usr/bin/zsh"
 
 sync_dotfiles() {
-  local source_dir=${1:A} # :A expands to absolute path
+  local source_dir=${1:A}
   local target_dir=${2:A}
   local dry_run=$3
+  # Use the provided pattern, or default to hidden files only for the root call
+  local pattern=${4:-".*(D)"}
 
   # Ensure source and target are provided
   [[ -z "$source_dir" || -z "$target_dir" ]] && { echo "Usage: sync_dotfiles <src> <dest> [dry_run_bool]"; return 1 }
 
-  # Iterate over all files/dirs in the source (including hidden ones)
-  for item in $source_dir/.*(D); do
+  # Expand the items based on the current pattern
+  # ~ is used to expand the glob safely within the loop
+  for item in $source_dir/${~pattern}; do
     local base_item=$(basename "$item")
+    
+    # Safety: Always ignore current and parent directory references
     [[ "$base_item" == "." || "$base_item" == ".." ]] && continue
+    # Optional: Ignore .git directory
+    [[ "$base_item" == ".git" ]] && continue
+
     local dest_item="$target_dir/$base_item"
 
     if [[ -d "$item" && ! -L "$item" ]]; then
-      # It is a real directory
+      # If it's a real directory
       if [[ -d "$dest_item" && ! -L "$dest_item" ]]; then
-        # Destination is also a real directory: descend
-        [[ "$dry_run" == "true" ]] && echo "[DRY-RUN] Would descend into $base_item"
-        sync_dotfiles "$item" "$dest_item" "$dry_run"
+        # If destination is a directory, descend and change pattern to "everything"
+        [[ "$dry_run" == "true" ]] && echo "[DRY-RUN] Descending into $base_item"
+        sync_dotfiles "$item" "$dest_item" "$dry_run" "*(D)"
       else
-        # Destination doesn't exist or is a file/link: Link the whole dir
+        # Destination is missing or a file: symlink the whole directory
         if [[ "$dry_run" == "true" ]]; then
           echo "[DRY-RUN] Would link directory: $dest_item -> $item"
         else
@@ -33,7 +41,7 @@ sync_dotfiles() {
         fi
       fi
     else
-      # It is a file or a symlink
+      # If it's a file or symlink: overwrite the target
       if [[ "$dry_run" == "true" ]]; then
         echo "[DRY-RUN] Would link file: $dest_item -> $item"
       else
