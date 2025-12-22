@@ -8,8 +8,8 @@
 #theme = Monokai Pro Octagon
 #theme = Liquid Carbon Transparent
 theme = vague
-font-family = "0xProto Nerd Font Mono"
-#font-family = "JetBrainsMono Nerd Font"
+#font-family = "0xProto Nerd Font Mono"
+font-family = "JetBrainsMono Nerd Font"
 #font-family = "LiterationMono Nerd Font Mono"
 #font-family = "MesloLGS NF"
 #font-family = "pseudoFont Liga Mono"
