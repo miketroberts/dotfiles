@@ -29,14 +29,18 @@ bindkey '\e[B' history-search-forward
 
 
 # enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
+if [[ -x "$(command -v dircolors)" || -x "$(command -v gdircolors)" ]]; then
+  if [ -x "$(command -v dircolors)" ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    alias dir='dir --color=auto'
-    alias vdir='vdir --color=auto'
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
+  else
+    test -r ~/.dircolors && eval "$(gdircolors -b ~/.dircolors)" || eval "$(gdircolors -b)"
+  fi  
+  alias ls='ls --color=auto'
+  alias dir='dir --color=auto'
+  alias vdir='vdir --color=auto'
+  alias grep='grep --color=auto'
+  alias fgrep='fgrep --color=auto'
+  alias egrep='egrep --color=auto'
 fi
 
 # some more ls aliases
