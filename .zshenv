@@ -1,2 +1,2 @@
 export EDITOR=nvim
-export PATH=$PATH:$HOME/local/nvim/bin
+export PATH=$HOME/local/nvim/bin:$HOME/.local/bin:$PATH
