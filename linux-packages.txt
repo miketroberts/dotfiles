@@ -2,4 +2,4 @@ fd-find
 cmake
 direnv
 luarocks
-
+tmux

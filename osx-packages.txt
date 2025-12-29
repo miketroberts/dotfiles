@@ -5,3 +5,5 @@ fzf
 cmake
 gh
 direnv
+tmux
+yq

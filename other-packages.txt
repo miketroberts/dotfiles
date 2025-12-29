@@ -1,3 +1,4 @@
 npm install -g tree-sitter-cli
 curl -sS https://starship.rs/install.sh | sh -s -- -y
 ./install-nvim.zsh
+curl https://cursor.com/install -fsS | bash
