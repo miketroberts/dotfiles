@@ -1,6 +1,10 @@
 zmodload zsh/zprof
 set -o vi
 
+if [[ -z $TERM ]] || ! infocmp "$TERM" >/dev/null 2>&1; then
+  export TERM=xterm-256color
+fi
+
 fpath=( ~/.zsh_functions "${fpath[@]}" )
 autoload -U $fpath[1]/*(.:t)
 
