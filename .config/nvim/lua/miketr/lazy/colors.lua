@@ -105,7 +105,7 @@ return {
     "miikanissi/modus-themes.nvim",
     config = function()
       require("modus-themes").setup({
-        dim_inactive = true
+        dim_inactive = false
       })
     end
   }
