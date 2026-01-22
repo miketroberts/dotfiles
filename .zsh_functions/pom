@@ -1,0 +1,46 @@
+# vi: ft=zsh
+# Local variable for the split
+local split="$POMO_SPLIT"
+
+# If POMO_SPLIT is empty, use gum to choose
+if [[ -z "$split" ]]; then
+  split=$(gum choose "25/5" "50/10" "all done" --header "Choose a pomodoro split.")
+fi
+
+# Handle the selected split
+case "$split" in
+  "25/5")
+    local work="25m"
+    local break="5m"
+    ;;
+  "50/10")
+    local work="50m"
+    local break="10m"
+    ;;
+  "all done")
+    return 0
+    ;;
+  *)
+    return 1
+    ;;
+esac
+
+# Work timer
+
+shortcuts run work-on
+gum log --structured --level debug "OSX Focus mode enabled."
+timer "$work" && terminal-notifier -message 'Pomodoro' \
+  -title 'Work Timer is up! Take a Break 😊' \
+  -sound Crystal
+
+# Break timer
+if gum confirm "Ready for a break?"; then
+  gum log --structured --level debug "OSX Focus mode disabled."
+  shortcuts run work-off
+  timer "$break" && terminal-notifier -message 'Pomodoro' \
+    -title 'Break is over! Get back to work 😬' \
+    -sound Crystal
+else
+  # Calls pom function again if break is declined/fails
+  pom
+fi
