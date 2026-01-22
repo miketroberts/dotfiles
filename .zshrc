@@ -66,7 +66,7 @@ export PATH="$HOME/.jenv/bin:$PATH"
 eval "$(starship init zsh)"
 eval "$(direnv hook zsh)"
 
-source ~/.zsh/plugins/zsh-z/zsh-z.plugin.sh
+#source ~/.zsh/plugins/zsh-z/zsh-z.plugin.sh
 
 # git prompt options
 # ...
@@ -75,7 +75,24 @@ source ~/.zsh/plugins/zsh-z/zsh-z.plugin.sh
 ZSH_CASE=smart # lower case patterns are treated as case insensitive
 zstyle ':completion:*' menu select # improve completion menu style
 
+alias work="timer 60m && terminal-notifier -message 'Pomodoro'\
+        -title 'Work Timer is up! Take a Break 😊'\
+        -appIcon '~/Pictures/pumpkin.png'\
+        -sound Crystal"
+        
+alias rest="timer 10m && terminal-notifier -message 'Pomodoro'\
+        -title 'Break is over! Get back to work 😬'\
+        -appIcon '~/Pictures/pumpkin.png'\
+        -sound Crystal"
+
 #[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 #[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 #[[ -s "/Users/mikeroberts/.gvm/scripts/gvm" ]] && source "/Users/mikeroberts/.gvm/scripts/gvm"
-zprof
+#zprof
+
+if [[ -v CODESPACES && "$CODESPACES" == "true" ]]; then
+  if [[ -v TERM_PROGRAM && "$TERM_PROGRAM" != "tmux" ]]; then
+    tmux list-sessions
+  fi
+fi
+
