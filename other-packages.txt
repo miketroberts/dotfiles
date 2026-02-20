@@ -1,5 +1,5 @@
-npm install -g tree-sitter-cli
+npm install -g tree-sitter-cli deno
 curl -sS https://starship.rs/install.sh | sh -s -- -y
 ./install-nvim.zsh
-curl https://cursor.com/install -fsS | bash
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
