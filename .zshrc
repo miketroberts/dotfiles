@@ -96,3 +96,7 @@ if [[ -v CODESPACES && "$CODESPACES" == "true" ]]; then
   fi
 fi
 
+# Ona Specific Logic for loading secrets.
+if [[ -v IS_ON_ONA && "$IS_ON_ONA" == "true" ]]; then
+  [ -f /etc/profile.d/ona-secrets.sh ] && . /etc/profile.d/ona-secrets.sh
+fi

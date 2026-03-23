@@ -1,0 +1,7 @@
+local env_id
+env_id=$(gitpod environment list \
+    | tail -n +2 \
+    | fzf --prompt='Select Gitpod env > ' --height=25% --layout=reverse --border \
+    | awk '{print $1}')
+
+[ -n "$env_id" ] && set-title "$env_id" && gitpod environment ssh --start "$env_id"

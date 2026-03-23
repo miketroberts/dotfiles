@@ -1,0 +1,17 @@
+{
+  "editorMode": "vim",
+  "mcpServers": {
+    "datadog": {
+      "type": "http",
+      "url": "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp",
+      "headers": {
+        "DD_API_KEY": "${DD_API_KEY}",
+        "DD_APPLICATION_KEY": "${DD_APPLICATION_KEY}"
+      }
+    },
+    "glean_default": {
+      "type": "http",
+      "url": "https://vanta-be.glean.com/mcp/default"
+    }
+  }
+}
