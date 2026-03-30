@@ -4,4 +4,4 @@ env_id=$(gitpod environment list \
     | fzf --prompt='Select Gitpod env > ' --height=25% --layout=reverse --border \
     | awk '{print $1}')
 
-[ -n "$env_id" ] && set-title "$env_id" && gitpod environment ssh --start "$env_id"
+[ -n "$env_id" ] && set-title "$env_id" && gitpod environment ssh "$env_id" --start -- -t "tmux new -A -s $env_id"

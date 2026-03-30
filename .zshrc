@@ -31,20 +31,27 @@ setopt SHARE_HISTORY             # Share history between all sessions.
 bindkey '\e[A' history-search-backward
 bindkey '\e[B' history-search-forward
 
-
 # enable color support of ls and also add handy aliases
 if [[ -x "$(command -v dircolors)" || -x "$(command -v gdircolors)" ]]; then
   if [ -x "$(command -v dircolors)" ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
   else
     test -r ~/.dircolors && eval "$(gdircolors -b ~/.dircolors)" || eval "$(gdircolors -b)"
-  fi  
-  alias ls='ls --color=auto'
-  alias dir='dir --color=auto'
-  alias vdir='vdir --color=auto'
-  alias grep='grep --color=auto'
-  alias fgrep='fgrep --color=auto'
-  alias egrep='egrep --color=auto'
+  fi
+  if gls --color=auto >/dev/null 2>&1; then
+    alias ls='gls --color=auto'
+  else
+    alias ls='ls --color=auto'
+  fi
+  if gdir --color=auto >/dev/null 2>&1; then
+    alias dir='gdir --color=auto'
+  else
+    alias dir='dir --color=auto'
+  fi
+  #alias vdir='vdir --color'
+  #alias grep='grep --color'
+  alias fgrep='fgrep --color'
+  alias egrep='egrep --color'
 fi
 
 # some more ls aliases
