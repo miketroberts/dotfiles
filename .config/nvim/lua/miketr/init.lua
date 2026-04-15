@@ -4,4 +4,4 @@ vim.g.maplocalleader = ","
 require("miketr.set")
 require("miketr.lazy_init")
 
-ColorMyPencils("zephyr")
+ColorMyPencils("modus_vivendi")
