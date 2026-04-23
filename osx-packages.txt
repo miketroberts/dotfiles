@@ -10,3 +10,6 @@ yq
 timer
 gum
 terminal-notifier
+git-delta
+vivid
+difftastic
