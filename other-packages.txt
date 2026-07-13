@@ -4,5 +4,3 @@ curl -sS https://starship.rs/install.sh | sh -s -- -y
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 gh extension install dlvhdr/gh-dash
 ./install-difft.zsh
-git config --global core.pager "difft"
-git config --global diff.external "difft"
