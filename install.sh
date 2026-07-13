@@ -60,5 +60,5 @@ script_dir=$(dirname "$(readlink -f "$0")")
 sync_dotfiles $script_dir ~ false
 
 # Post install
-nvim --headless "+Lazy! install" +qa
+~/local/bin/nvim --headless "+Lazy! install" +qa
 ~/.tmux/plugins/tpm/bin/install_plugins
