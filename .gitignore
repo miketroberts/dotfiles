@@ -1,2 +1,9 @@
 .tmux/plugins/*
 !.tmux/plugins/tpm
+
+# App state and credentials — never commit these.
+.config/1Password/
+.config/AWSVPNClient/
+.config/gh/
+.config/github-copilot/
+.config/slack-vanta/
