@@ -5,8 +5,11 @@ if [[ -z $TERM ]] || ! infocmp "$TERM" >/dev/null 2>&1; then
   export TERM=xterm-256color
 fi
 
-fpath=( ~/.zsh_functions "${fpath[@]}" )
-autoload -U $fpath[1]/*(.:t)
+# uncommitted/ is gitignored, for functions that must never be committed. The (N)
+# glob qualifier keeps this quiet when that directory is absent, as it is on a
+# fresh clone.
+fpath=( ~/.zsh_functions ~/.zsh_functions/uncommitted "${fpath[@]}" )
+autoload -U ~/.zsh_functions/*(N.:t) ~/.zsh_functions/uncommitted/*(N.:t)
 
 # Enable history autocomplete.
 autoload -U compinit 
