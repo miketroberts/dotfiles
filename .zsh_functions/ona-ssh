@@ -1,0 +1,18 @@
+cleanup() {
+
+    # Disable mouse tracking
+    printf '\e[?1000l\e[?1002l\e[?1003l\e[?1006l'
+
+    # Restore terminal settings
+    stty sane 2>/dev/null
+}
+
+trap cleanup EXIT INT TERM
+
+local env_id
+env_id=$(ona environment list \
+    | tail -n +2 \
+    | fzf --prompt='Select Gitpod env > ' --height=25% --layout=reverse --border \
+    | awk '{print $1}')
+
+[ -n "$env_id" ] && set-title "$env_id" && ona environment ssh "$env_id" --start -- -t "tmux new -A -s $env_id"

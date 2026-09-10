@@ -1,0 +1,15 @@
+# vim: ft=sh
+local env_id
+env_id=$(ona environment list \
+  | tail -n +2 \
+  | fzf --prompt='Select Gitpod env > ' --height=25% --layout=reverse --border \
+  | awk '{print $1}')
+
+local socket="/tmp/onassh-${env_id}.sock"
+
+ssh -S "$socket" -O check "${env_id}.gitpod.environment" 2>/dev/null \
+  && echo "Tunnels are running for ${env_id}" \
+  || {
+    echo "No active tunnels for ${env_id}" >&2
+    return 1
+  }

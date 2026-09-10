@@ -1,0 +1,67 @@
+# vim: ft=sh
+local env_id
+env_id=$(ona environment list \
+  | tail -n +2 \
+  | fzf --prompt='Select ona env > ' --height=25% --layout=reverse --border \
+  | awk '{print $1}')
+
+[[ -z "$env_id" ]] && return 1
+
+# Use a stable port per env so reconnects reuse the running nvim instance.
+local port_file="/tmp/onassh-nvim-port-${env_id}"
+local port
+if [[ -f "$port_file" ]]; then
+  port=$(<"$port_file")
+else
+  port=$(( RANDOM % 1023 + 1025 ))
+  print -r -- "$port" > "$port_file"
+fi
+
+local host="${env_id}.gitpod.environment"
+local socket="/tmp/onassh-${env_id}.sock"
+local nvim_socket="/tmp/onassh-nvim-${env_id}-${port}.sock"
+
+# Reuse existing control socket if available (from ona-port-forwarding-up)
+local -a ssh_cmd
+if ssh -S "$socket" -O check "$host" 2>/dev/null; then
+  ssh_cmd=(ssh -S "$socket")
+else
+  ssh_cmd=(ssh)
+fi
+
+# Only spawn nvim if one isn't already listening on the port.
+if "${ssh_cmd[@]}" "$host" "pgrep -f -- '--listen 127.0.0.1:${port}' >/dev/null"; then
+  echo "Reusing existing nvim on ${host}:${port}"
+else
+  echo "Starting nvim --listen on ${host} port ${port}..."
+  "${ssh_cmd[@]}" "$host" "
+    if tmux has-session -t '${env_id}' 2>/dev/null; then
+      tmux new-window -t '${env_id}:' 'nvim --headless --listen 127.0.0.1:${port}'
+    else
+      nohup nvim --headless --listen 127.0.0.1:${port} </dev/null >>~/.nvim-neovide.log 2>&1 &
+    fi
+  "
+  # Give nvim a moment to bind its socket
+  sleep 1
+fi
+
+# Set up port forwarding only if the local port isn't already forwarded.
+if ! lsof -iTCP:${port} -sTCP:LISTEN -t >/dev/null 2>&1; then
+  echo "Port forwarding not up."
+  if ssh -S "$socket" -O check "$host" 2>/dev/null; then
+    echo "Adding port to environment socket."
+    ssh -S "$socket" -O forward -L "${port}:127.0.0.1:${port}" "$host"
+  else
+    ssh -fN \
+      -M \
+      -S "$socket" \
+      -o ExitOnForwardFailure=yes \
+      -L "${port}:127.0.0.1:${port}" \
+      "$host"
+  fi
+else
+  echo "Port forwarding on ${port} already setup."
+fi
+
+echo "Launching neovide --server 127.0.0.1:${port}"
+neovide --server "127.0.0.1:${port}" --fork

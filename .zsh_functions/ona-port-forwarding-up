@@ -1,0 +1,53 @@
+# vim: ft=sh
+local env_id
+env_id=$(ona environment list \
+  | tail -n +2 \
+  | fzf --prompt='Select Gitpod env > ' --height=25% --layout=reverse --border \
+  | awk '{print $1}')
+
+[[ -z "$env_id" ]] && return 1
+
+local host="${env_id}.gitpod.environment"
+local socket="/tmp/onassh-${env_id}.sock"
+
+local -a ports
+ports=("${(@f)$(ssh "$host" \
+  "ss -ltnH | awk '{print \$4}' \
+  | sed -E 's/.*:([0-9]+)$/\1/' \
+  | grep -E '^[0-9]+$' \
+  | grep -v '^22$' \
+  | awk '\$1 >= 1025' \
+  | sort -nu"
+)}") || return 1
+
+if (( ${#ports} == 0 )); then
+  echo "No listening TCP ports >=1025 found." >&2
+  return 1
+fi
+
+if ssh -S "$socket" -O check "$host" 2>/dev/null; then
+  echo "Reusing existing socket for ${env_id}; adding forwards:"
+  local p
+  for p in $ports; do
+    if lsof -iTCP:${p} -sTCP:LISTEN -t >/dev/null 2>&1; then
+      echo "  - ${p} (already forwarded)"
+    else
+      echo "  - ${p}"
+      ssh -S "$socket" -O forward -L "${p}:127.0.0.1:${p}" "$host"
+    fi
+  done
+else
+  echo "Creating master socket for ${env_id}; forwarding:"
+  local -a ssh_flags
+  local p
+  for p in $ports; do
+    echo "  - $p"
+    ssh_flags+=("-L" "${p}:127.0.0.1:${p}")
+  done
+  ssh -fN \
+    -M \
+    -S "$socket" \
+    -o ExitOnForwardFailure=yes \
+    "${ssh_flags[@]}" \
+    "$host"
+fi
