@@ -95,6 +95,8 @@ alias rest="timer 10m && terminal-notifier -message 'Pomodoro'\
         -appIcon '~/Pictures/pumpkin.png'\
         -sound Crystal"
 
+alias ccc="claude --continue"
+
 #[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 #[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 #[[ -s "/Users/mikeroberts/.gvm/scripts/gvm" ]] && source "/Users/mikeroberts/.gvm/scripts/gvm"
@@ -110,3 +112,5 @@ fi
 if [[ -v IS_ON_ONA && "$IS_ON_ONA" == "true" ]]; then
   [ -f /etc/profile.d/ona-secrets.sh ] && . /etc/profile.d/ona-secrets.sh
 fi
+
+. "$HOME/.local/bin/env"
