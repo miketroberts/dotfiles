@@ -1,0 +1,16 @@
+local project project_id project_name env_name
+
+project=$(ona project list -o json \
+    | jq -r '.[] | "\(.id)\t\(.metadata.name)"' \
+    | fzf --prompt='Select Ona project > ' --height=25% --layout=reverse --border \
+          --delimiter='\t' --with-nth=2)
+
+[ -z "$project" ] && return 1
+
+project_id="${project%%$'\t'*}"
+project_name="${project#*$'\t'}"
+
+vared -p "Environment name for '$project_name': " env_name
+[ -z "$env_name" ] && echo "No name given, aborting." && return 1
+
+ona environment create "$project_id" --name "$env_name" --class-id 019b3484-f550-77bc-8c28-86627185b6a3 --inactivity-timeout 8h
