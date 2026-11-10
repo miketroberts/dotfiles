@@ -1,0 +1,14 @@
+local env env_id confirm
+
+env=$(ona environment list \
+    | fzf --prompt='Select Ona environment to delete > ' --height=25% --layout=reverse --border \
+          --header-lines=1)
+
+[ -z "$env" ] && return 1
+
+env_id="${env%% *}"
+
+vared -p "Delete environment '$env_id'? [y/N] " confirm
+[[ "$confirm" != [yY]* ]] && echo "Aborted." && return 1
+
+ona environment delete "$env_id"

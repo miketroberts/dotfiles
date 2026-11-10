@@ -13,4 +13,4 @@ project_name="${project#*$'\t'}"
 vared -p "Environment name for '$project_name': " env_name
 [ -z "$env_name" ] && echo "No name given, aborting." && return 1
 
-ona environment create "$project_id" --name "$env_name" --class-id 019b3484-f550-77bc-8c28-86627185b6a3 --inactivity-timeout 8h
+ona environment create "$project_id" --name "$env_name" --class-id 01a18409-e58b-7c32-ab27-e91d5a0e812b --inactivity-timeout 8h
